@@ -1,14 +1,15 @@
-import logo from './logo.svg';
+
 import './App.css';
-import Home from './Pages/Home';
-import PhoneInput from 'react-phone-number-input';
-import PhoneSignin from './Pages/PhoneSignin';
+import PrivateRoutes from './Routes/PrivateRoutes';
+import PublicRoutes from './Routes/PublicRoutes';
+
+
 
 function App() {
   return (
     <div className="App">
-     
-     <PhoneSignin/>
+    
+ <PrivateRoutes/>
     </div>
   );
 }
