@@ -24,14 +24,17 @@ const postSignupFailure=()=>{
     })
 }
 
-export const postSignup=()=>(dispatch)=>{
+export const postSignup=(data)=>(dispatch)=>{
     dispatch(postSignupRequiest())
     return axios({
         url:"https://reqres.in/api/register",
-        method:"POST"
+        method:"POST",
+        data
     })
     .then((res)=>{
         dispatch(postSignupSuccess(res.data))
+        localStorage.setItem("token",res.data.token)
+        console.log("token",res.data.token)
     })
     .catch((error)=>{
         dispatch(postSignupFailure())
