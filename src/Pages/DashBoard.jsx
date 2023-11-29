@@ -109,7 +109,7 @@ export default function Dashboard() {
     let value=e.target.value 
     navigate(`/home/${value}`)
     setSearch(value)
-    console.log("valll",value)
+    // console.log("valll",value)
   }
   const handleCart=()=>{
     navigate('/cart')
@@ -117,6 +117,15 @@ export default function Dashboard() {
 
   const handleHome=()=>{
     navigate('/home')
+  }
+
+  const handleLogout=()=>{
+    localStorage.clear()
+    navigate('/welcome')
+  }
+
+  const handlePayment=()=>{
+    navigate('/payment')
   }
 
   return (
@@ -149,11 +158,17 @@ export default function Dashboard() {
               sx={{ flexGrow: 1 }}
             >
               {/* Home Appliances<br/> */}
-            <Input   onChange={handleSearch} placeholder='Search here...'/>
+             
+           
+           {/* {path.pathname===`/home/${search}`||path.pathname==="/home"&& <Input   onChange={handleSearch} placeholder='Search here...'/>} */}
             </Typography>
+            {path.pathname==="/cart"&&<Typography sx={{marginRight:'500px' }}>Cart Page</Typography>}
+           
             <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
+                {/* <NotificationsIcon /> */}
+                {path.pathname==="/payment"&&<Typography sx={{marginRight:'500px' }}>Payment Page</Typography>}
+                {path.pathname==="/home"&&<Typography sx={{marginRight:'500px' }}>Select your product</Typography>}
               </Badge>
             </IconButton>
           </Toolbar> 
@@ -174,10 +189,12 @@ export default function Dashboard() {
           <Divider />
           <List component="nav">
             {/* {mainListItems} */}<Link onClick={handleCart}>Cart page</Link><br/>
-            <Link onClick={handleHome}>Home page</Link>
+            <Link onClick={handleHome}>Home page</Link><br/>
+            <Link onClick={handlePayment}>Payment page</Link><br/>
             <Divider sx={{ my: 1 }} />
             {/* {secondaryListItems} */}
           </List>
+          <Button onClick={handleLogout}>Logout</Button>
         </Drawer>
         <Box
           component="main"

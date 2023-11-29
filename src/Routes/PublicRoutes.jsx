@@ -15,6 +15,7 @@ function PublicRoutes() {
             <Route path='/phone' element={<PhoneSignin/>}/>
             <Route path='/signin' element={<Signin/>}/>
             <Route path='/signup' element={<Signup/>}/>
+            <Route path='/welcome' element={<Welcome/>}/>
             
            
 

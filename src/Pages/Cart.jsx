@@ -14,10 +14,35 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { deleteCart, getCart, patchCart, postPayment } from '../Redux/data/action';
+import { Image } from '@mui/icons-material';
+import theme from '../Theme';
+import { Img } from '@chakra-ui/react';
+import { Alert, Button, CircularProgress } from '@mui/material';
+import { v4 as uuidv4 } from 'uuid';
 
 // interface ExpandMoreProps extends IconButtonProps {
 //   expand: boolean;
 // }
+
+// const Box=styled(({theme})=>({
+//     display:'flex',
+
+//     [theme.breakpoints.down('xl')]:{
+
+//     },
+//     [theme.breakpoints.down('lg')]:{
+
+//     },
+//     [theme.breakpoints.down('xs')]:{
+
+//     },
+//     [theme.breakpoints.down('md')]:{
+
+//     },
+// }))
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -37,33 +62,98 @@ export default function RecipeReviewCard() {
     setExpanded(!expanded);
   };
 
+  const cartData=useSelector((store)=>store.data.getCart)
+  const loading=useSelector((store)=>store.data.isLoading)
+  const error=useSelector((store)=>store.data.isError)
+  const dispatch=useDispatch()
+
+  const dataId=uuidv4()
+
+  console.log("cartData",cartData)
+
+  useEffect(()=>{
+    dispatch(getCart())
+  },[])
+
+  const handleAdd=(quant,id)=>{
+    let data={
+        quant:quant+1
+    }
+    dispatch(patchCart(data,id))
+  }
+
+  const handleReduce=(quant,id)=>{
+    if(quant<2){
+        quant=2
+    }
+    let data={
+        quant:quant-1
+    }
+    dispatch(patchCart(data,id))
+   
+  }
+
+  const handleRemove=(id)=>{
+    dispatch(deleteCart(id))
+  }
+
+  const total=cartData.reduce((acc,item,index)=>{
+    return acc+item.price*item.quant
+  },0)
+
+  const handleOrder=()=>{
+    let data={
+        item:cartData.map((item)=>{return item.name}),
+        price:cartData.map((item)=>{return item.price}),
+        qrImage:dataId
+    }
+    dispatch(postPayment(data))
+  }
+
+
+
+
   return (
-    <Card sx={{ maxWidth: 345 }}>
+
+    <>
+
+    {cartData.map((item)=>(
+        <>
+        
+{loading&&<CircularProgress/>}
+{error&&<Alert severity='error'>Server Error...</Alert>}
+        <Card sx={{ maxWidth: 345 }}>
       <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
-          </Avatar>
-        }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title="Shrimp and Chorizo Paella"
-        subheader="September 14, 2016"
+        // avatar={
+        //   <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+        //     {item.price}
+        //   </Avatar>
+        // }
+        // action={
+        //   <IconButton aria-label="settings">
+        //     <MoreVertIcon />
+        //   </IconButton>
+        // }
+       
       />
-      <CardMedia
+
+<Img src={item.image}/>
+   
+      {/* <CardMedia
         component="img"
         height="194"
         image="/static/images/cards/paella.jpg"
         alt="Paella dish"
-      />
+      /> */}
+      <Typography>{item.name}</Typography> <br/>
+      <Typography>$ {item.price}/-</Typography> <br/>
+      <Typography>Quantity :{item.quant}</Typography> <br/>
+      <Button  onClick={()=>handleAdd(item.quant,item.id)}>+</Button>
+      <Button onClick={()=>handleReduce(item.quant,item.id)}>-</Button><br/>
+      <Button onClick={()=>handleRemove(item.id)}>Remove item</Button>
       <CardContent>
         <Typography variant="body2" color="text.secondary">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the mussels,
-          if you like.
+         
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -101,5 +191,17 @@ export default function RecipeReviewCard() {
         </CardContent>
       </Collapse>
     </Card>
+
+
+
+        
+        </>
+    ))}
+
+    <Typography>Total Amount : {total}</Typography>
+
+    <Button  onClick={handleOrder}>Place Order</Button>
+    
+    </>
   );
 }
